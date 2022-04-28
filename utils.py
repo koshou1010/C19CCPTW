@@ -97,7 +97,8 @@ class DLPredict:
             seq_x, seq_y = sequence[i:end_ix], sequence[end_ix]
             x.append(seq_x)
             y.append(seq_y)
-        return np(x), np(y)
+        
+        return np.array(x), np.array(y)
     
     def model_build(self):
         if self.model_type == 1:
@@ -120,8 +121,8 @@ class DLPredict:
     def model_training(self):
         self.model.compile(optimizer = 'adam', loss = 'mean_squared_error')
         history = self.model.fit(self.x_train, self.y_train, epochs = self.n_epochs, batch_size = 32)
-        loss = history.history['loss']
-        epochs = range(len(loss))
+        self.loss = history.history['loss']
+        self.epochs = range(len(self.loss))
     
     def main(self):
         '''
@@ -174,8 +175,8 @@ class DLPredict:
         plt.figure(figsize=(8,7))
 
         plt.subplot(3, 1, 1)
-        plt.plot(dataset['Temperature'], color = 'black', linewidth=1, label = 'True value')
-        plt.ylabel("Temperature")
+        plt.plot(self.dataset['a06'], color = 'black', linewidth=1, label = 'True value')
+        plt.ylabel("a06")
         plt.xlabel("Day")
         plt.title("All data")
 
@@ -184,20 +185,20 @@ class DLPredict:
         plt.plot(y_test_descaled, color = 'black', linewidth=1, label = 'True value')
         plt.plot(y_predicted_descaled, color = 'red',  linewidth=1, label = 'Predicted')
         plt.legend(frameon=False)
-        plt.ylabel("Temperature")
+        plt.ylabel("a06")
         plt.xlabel("Day")
         plt.title("Predicted data (n days)")
 
         plt.subplot(3, 2, 4)
-        plt.plot(y_test_descaled[0:75], color = 'black', linewidth=1, label = 'True value')
-        plt.plot(y_predicted_descaled[0:75], color = 'red', label = 'Predicted')
+        plt.plot(y_test_descaled[0:20], color = 'black', linewidth=1, label = 'True value')
+        plt.plot(y_predicted_descaled[0:20], color = 'red', label = 'Predicted')
         plt.legend(frameon=False)
-        plt.ylabel("Temperature")
+        plt.ylabel("a06")
         plt.xlabel("Day")
         plt.title("Predicted data (first 75 days)")
 
         plt.subplot(3, 3, 7)
-        plt.plot(epochs, loss, color='black')
+        plt.plot(self.epochs, self.loss, color='black')
         plt.ylabel("Loss (MSE)")
         plt.xlabel("Epoch")
         plt.title("Training curve")
